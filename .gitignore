@@ -6,3 +6,7 @@ build
 
 #Envs
 .env
+
+# Coverage
+
+coverage
