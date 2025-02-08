@@ -28,7 +28,7 @@ describe('Get User Profile Use Case', () => {
     expect(user.name).toEqual(createdUser.name)
   })
 
-  it.skip('should be NOT be able to get user profile with wrong id', async () => {
+  it('should be NOT be able to get user profile with wrong id', async () => {
     await expect(() => sut.execute({
       userId: 'non-existing-id',
     })).rejects.toBeInstanceOf(ResourceNotFoundError)
