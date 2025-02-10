@@ -1,5 +1,44 @@
-import { expect, test } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-test('ok', ( ) => {
-  expect(2 + 2).toEqual(4)
+import request from 'supertest'
+import { app } from '@/app'
+
+describe('Profile Controller [e2e]', () => {
+  beforeAll(async () => {
+    await app.ready()
+  })
+
+  afterAll(async () => {
+    await app.close()
+  })
+
+  it('should be able to get user profile', async () => {
+    await request(app.server)
+      .post('/users')
+      .send({
+        name: 'John Doe',
+        email: 'johndoe@mail.com',
+        password: '123456',
+      })
+
+    const authReponse = await request(app.server)
+      .post('/sessions')
+      .send({
+        email: 'johndoe@mail.com',
+        password: '123456',
+      })
+
+    const { token } = authReponse.body
+
+    const profileResponse = await request(app.server)
+      .get('/me')
+      .set('Authorization', `Bearer ${token}`)
+
+    expect(profileResponse.statusCode).toEqual(200)
+    expect(profileResponse.body).toEqual(
+      expect.objectContaining({
+        email: 'johndoe@mail.com',
+      }),
+    )
+  })
 })
